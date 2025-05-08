@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trivia Escolar</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f4f8;
+      padding: 20px;
+    }
+    .trivia-container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .question {
+      font-size: 1.2em;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #e0e0e0;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .options button.correct {
+      background-color: #4CAF50;
+      color: white;
+    }
+    .options button.incorrect {
+      background-color: #f44336;
+      color: white;
+    }
+    #nextBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #nextBtn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    .result {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="trivia-container animate__animated animate__fadeIn">
+    <div id="quiz"></div>
+    <button id="nextBtn" disabled>Siguiente</button>
+  </div>
+
+  <script>
+    const preguntas = [
+      {
+        pregunta: "¿Cuál es el planeta más cercano al Sol?",
+        opciones: ["Venus", "Tierra", "Mercurio", "Marte"],
+        respuesta: 2
+      },
+      {
+        pregunta: "¿Quién escribió 'Don Quijote de la Mancha'?",
+        opciones: ["Miguel de Cervantes", "Pablo Neruda", "Federico García Lorca", "Gabriel García Márquez"],
+        respuesta: 0
+      },
+      {
+        pregunta: "¿Cuál es el resultado de 9 x 8?",
+        opciones: ["72", "81", "64", "98"],
+        respuesta: 0
+      },
+      {
+        pregunta: "¿Qué órgano del cuerpo humano bombea la sangre?",
+        opciones: ["Pulmones", "Cerebro", "Hígado", "Corazón"],
+        respuesta: 3
+      },
+      {
+        pregunta: "¿En qué continente está Egipto?",
+        opciones: ["Asia", "África", "Europa", "América"],
+        respuesta: 1
+      },
+      {
+        pregunta: "¿Cuántos días tiene un año bisiesto?",
+        opciones: ["364", "365", "366", "367"],
+        respuesta: 2
+      },
+      {
+        pregunta: "¿Qué gas necesitamos para respirar?",
+        opciones: ["Dióxido de carbono", "Oxígeno", "Hidrógeno", "Nitrógeno"],
+        respuesta: 1
+      },
+      {
+        pregunta: "¿Cuál es el océano más grande del mundo?",
+        opciones: ["Atlántico", "Índico", "Ártico", "Pacífico"],
+        respuesta: 3
+      },
+      {
+        pregunta: "¿Qué instrumento tiene teclas blancas y negras?",
+        opciones: ["Guitarra", "Piano", "Flauta", "Violín"],
+        respuesta: 1
+      },
+      {
+        pregunta: "¿Cuántos continentes hay en el mundo?",
+        opciones: ["5", "6", "7", "8"],
+        respuesta: 2
+      }
+    ];
+
+    let actual = 0;
+    let puntaje = 0;
+
+    const quizDiv = document.getElementById("quiz");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function cargarPregunta() {
+      nextBtn.disabled = true;
+      const preguntaActual = preguntas[actual];
+      quizDiv.innerHTML = `
+        <div class="question">${preguntaActual.pregunta}</div>
+        <div class="options">
+          ${preguntaActual.opciones.map((op, idx) => `<button onclick="seleccionarRespuesta(this, ${idx})">${op}</button>`).join('')}
+        </div>
+      `;
+    }
+
+    function seleccionarRespuesta(btn, idx) {
+      const opciones = quizDiv.querySelectorAll(".options button");
+      opciones.forEach(b => b.disabled = true);
+      const correcta = preguntas[actual].respuesta;
+
+      if (idx === correcta) {
+        btn.classList.add("correct");
+        puntaje++;
+      } else {
+        btn.classList.add("incorrect");
+        opciones[correcta].classList.add("correct");
+      }
+      nextBtn.disabled = false;
+    }
+
+    nextBtn.addEventListener("click", () => {
+      actual++;
+      if (actual < preguntas.length) {
+        cargarPregunta();
+      } else {
+        mostrarResultado();
+      }
+    });
+
+    function mostrarResultado() {
+      let mensaje = "";
+      if (puntaje === 10) mensaje = "¡Excelente! ¡Lo lograste todo!";
+      else if (puntaje >= 7) mensaje = "Muy bien, buen conocimiento general.";
+      else if (puntaje >= 4) mensaje = "Regular, puedes mejorar.";
+      else mensaje = "Necesitas repasar más. ¡Ánimo!";
+
+      quizDiv.innerHTML = `
+        <div class="result animate__animated animate__fadeIn">
+          <h2>Tu puntaje: ${puntaje} de ${preguntas.length}</h2>
+          <p>${mensaje}</p>
+        </div>
+      `;
+      nextBtn.style.display = "none";
+    }
+
+    cargarPregunta();
+  </script>
+</body>
+</html>
